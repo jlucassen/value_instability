@@ -1,3 +1,4 @@
 .DS_Store
 __pycache__
 .env
+social-chem-101/*.tsv 
