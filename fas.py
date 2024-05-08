@@ -2,7 +2,7 @@ import networkx as nx
 from itertools import combinations
 
 # GPT written, unverified
-def is_acyclic(G):
+def is_acyclic(G: nx.DiGraph):
     """ Check if the graph G is acyclic """
     try:
         nx.find_cycle(G)
@@ -11,7 +11,7 @@ def is_acyclic(G):
         return True
 
 # GPT written, unverified
-def find_optimal_fas(G):
+def find_optimal_fas(G: nx.DiGraph):
     """ Find the optimal feedback arc set for the graph G """
     edges = list(G.edges())
     num_edges = len(edges)
