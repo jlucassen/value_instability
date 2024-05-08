@@ -1,3 +1,7 @@
+"""
+Refactored into NX by Copilot (haven't verified if everything works the same)
+"""
+
 import numpy as np
 import networkx as nx
 from llm import LLM
