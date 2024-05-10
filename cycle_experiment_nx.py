@@ -83,3 +83,14 @@ print("Optimal Feedback Arc Set:", optimal_fas)
 size_of_optimal_fas = len(optimal_fas)
 print("Size of optimal_fas:", size_of_optimal_fas)
 # %%
+def smallest_cycle_size(cycles):
+    return min([len(cycle) for cycle in cycles])
+
+def average_cycle_size(cycles):
+    total_cycles = len(cycles)
+    sum_of_cycle_sizes = sum(len(cycle) for cycle in cycles)
+    average_cycle_size = sum_of_cycle_sizes / total_cycles
+    return average_cycle_size
+
+print(f"smallest_cycle_size: {smallest_cycle_size(cycles)}")
+print(f"average_cycle_size: {average_cycle_size(cycles)}")
