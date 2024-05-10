@@ -80,3 +80,6 @@ print(rates)
 # %%
 optimal_fas = find_optimal_fas(G)
 print("Optimal Feedback Arc Set:", optimal_fas)
+size_of_optimal_fas = len(optimal_fas)
+print("Size of optimal_fas:", size_of_optimal_fas)
+# %%
