@@ -27,6 +27,7 @@ class LLM:
             messages=[{"role": "user", "content": prompt}],
             model=self.model_name,
             max_tokens=1,
+            temperature=0, # greedy
             logit_bias=logit_bias
         )
         return chat_completion.choices[0].message.content
