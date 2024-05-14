@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from llm import LLM
 
 # %%
-llm = LLM("gpt-3.5-turbo")
-#llm = LLM("gpt-4")
+#llm = LLM("gpt-3.5-turbo")
+llm = LLM("gpt-4")
 
 # %%
 problem_setting = """You are an AI agent playing a game of Dominion.
@@ -67,7 +67,7 @@ def find_all_cycles(adjacency):
     return [list(cycle) for cycle in cycles]
 
 cycles = find_all_cycles(preference_matrix)
-print("All cycles in the graph:", '\n'.join([str(cyc) for cyc in cycles]))
+print("All cycles in the graph:\n", '\n'.join([str(cyc) for cyc in cycles]))
 plt.hist([len(cycle) for cycle in cycles], bins=range(2, max([len(cycle) for cycle in cycles])))
 plt.show()
 # %%
