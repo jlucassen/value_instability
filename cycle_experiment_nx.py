@@ -8,6 +8,7 @@ import networkx as nx
 from llm import LLM
 from fas import find_optimal_fas
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 # %%
 llm = LLM("gpt-3.5-turbo")
@@ -100,4 +101,29 @@ print(f"smallest_cycle_size: {min([len(cycle) for cycle in cycles])}")
 print(f"max_cycle_size: {max([len(cycle) for cycle in cycles])}")
 print(f"average_cycle_size: {np.mean([len(cycle) for cycle in cycles])}")
 print(f"cycle keep rate: {np.mean(rates)}")
+# %%
+import pandas as pd 
+df = pd.DataFrame({'length':[len(c) for c in cycles], 'rate':rates})
+plt.plot(df.groupby('length').mean())
+plt.ylim(0,1)
+# %%
+plt.plot(df.groupby('length').count())
+# %%
+import random
+
+def process_cycle_dummy(ct, cyc_len):
+    out = 0
+    prompt = f"""{problem_setting}
+    Another instance of you was asked to give preferences between cards, and a cycle was found.
+    You said you preferred:
+    {" > ".join([random.choice(cards) for _ in range(cyc_len)])}
+
+    Do you want to keep your preferences the same and retain this cycle?"""
+    for _ in tqdm(list(range(ct))):
+        completion = llm.choice_completion(prompt, ["Yes", "No"])
+        out += 1 if completion == "Yes" else 0
+    return out/ct
+
+print(process_cycle_dummy(50, 3))
+print(process_cycle_dummy(50, 9))
 # %%
