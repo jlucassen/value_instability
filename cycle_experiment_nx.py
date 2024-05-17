@@ -2,14 +2,12 @@
 Refactored into NX by Copilot (haven't verified if everything works the same)
 """
 
+# %%
 import numpy as np
 import networkx as nx
 from llm import LLM
 from fas import find_optimal_fas
-
-# %%
-
-
+from tqdm import tqdm
 
 # %%
 llm = LLM("gpt-3.5-turbo")
@@ -26,23 +24,23 @@ cards = [
     'Gold',
     'Estate',
     'Duchy',
-    'Province',
-    # "Smithy",
-    # "Council Room",
-    # "Laboratory",
-    # "Market",
-    # "Artisan",
+    'Province', # six basics
+    "Smithy",
+    "Council Room",
+    "Laboratory",
+    "Market",
+    "Artisan", # five kingdom cards
     # "Cellar",
     # "Merchant",
     # "Workshop",
     # "Gardens",
-    # "Militia",
+    # "Militia", # full ten kingdom cards
 ]
 
 # %%
-n = 3
+n = 1 # greedy sampling with t=0
 preference_matrix = np.zeros([len(cards), len(cards)])
-for card1 in cards:
+for card1 in tqdm(cards):
     for card2 in cards:
         if card1 != card2:
             for _ in range(n):
@@ -63,9 +61,15 @@ def find_all_cycles(graph):
 cycles = find_all_cycles(G)
 print("All cycles in the graph:", cycles)
 # %%
-m = 3
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
+
+m = 1 # because using t=0
 rates = np.zeros([len(cycles)])
-for cycle in cycles:
+lock = Lock()
+pbar = tqdm(total=m*len(cycles))
+def process_cycle(cycle_index):
+    cycle = cycles[cycle_index]
     prompt = f"""{problem_setting}
     Another instance of you was asked to give preferences between cards, and a cycle was found.
     You said you preferred:
@@ -74,23 +78,26 @@ for cycle in cycles:
     Do you want to keep your preferences the same and retain this cycle?"""
     for _ in range(m):
         completion = llm.choice_completion(prompt, ["Yes", "No"])
-        rates[cycles.index(cycle)] += 1 if completion == "Yes" else 0
+        rates[cycle_index] += 1 if completion == "Yes" else 0
+        with lock:
+            pbar.update(1)
+ #%%
+with ThreadPoolExecutor(max_workers=100) as executor:
+    executor.map(process_cycle, range(len(cycles)))
 rates /= m
 print(rates)
+rates = rates.round(0)
+print(rates)
 # %%
-optimal_fas = find_optimal_fas(G)
-print("Optimal Feedback Arc Set:", optimal_fas)
-size_of_optimal_fas = len(optimal_fas)
-print("Size of optimal_fas:", size_of_optimal_fas)
+# optimal_fas = find_optimal_fas(G)
+# print("Optimal Feedback Arc Set:", optimal_fas)
+# size_of_optimal_fas = len(optimal_fas)
+# print("Size of optimal_fas:", size_of_optimal_fas)
 # %%
-def smallest_cycle_size(cycles):
-    return min([len(cycle) for cycle in cycles])
 
-def average_cycle_size(cycles):
-    total_cycles = len(cycles)
-    sum_of_cycle_sizes = sum(len(cycle) for cycle in cycles)
-    average_cycle_size = sum_of_cycle_sizes / total_cycles
-    return average_cycle_size
-
-print(f"smallest_cycle_size: {smallest_cycle_size(cycles)}")
-print(f"average_cycle_size: {average_cycle_size(cycles)}")
+print(f"number of cycles: {len(cycles)}")
+print(f"smallest_cycle_size: {min([len(cycle) for cycle in cycles])}")
+print(f"max_cycle_size: {max([len(cycle) for cycle in cycles])}")
+print(f"average_cycle_size: {np.mean([len(cycle) for cycle in cycles])}")
+print(f"cycle keep rate: {np.mean(rates)}")
+# %%
