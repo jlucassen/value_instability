@@ -1,7 +1,8 @@
 import pandas as pd
 import argparse
 
-def wwo_reasoning(df_decoded_answers):
+def wwo_reasoning(df_decoded_answers,):
+    results = pd.DataFrame()
     df_decoded_answers['reasoning_decoded_top_0'] = df_decoded_answers['reasoning_decoded_top_0'].apply(lambda x: x.strip())
     df_decoded_answers['no_reasoning_decoded_top_0'] = df_decoded_answers['no_reasoning_decoded_top_0'].apply(lambda x: x.strip())
 
@@ -14,10 +15,22 @@ def wwo_reasoning(df_decoded_answers):
     df_decoded_answers['no_reasoning_final_other'] = df_decoded_answers['no_reasoning_decoded_top_0'].apply(lambda x: False if x in ['A', 'B'] else True)
     
     # print number of other answers
-    print("Number of other answers in reasoning_decoded_top_0: ", df_decoded_answers['reasoning_final_other'].value_counts())
+    num_ans_other = df_decoded_answers['reasoning_final_other'].value_counts()
+    print("Number of other answers in reasoning_decoded_top_0: ", num_ans_other)
+    # add to results['num_ans_other'] 
+    results['num_ans_other'] = num_ans_other
+
+    num_ans_a = df_decoded_answers['reasoning_final_A'].value_counts()
+    print("Number of A answers in reasoning_decoded_top_0: ", num_ans_a)
+    # add to results['num_ans_a']
+    results['num_ans_a'] = num_ans_a
 
     # number of rows where reasoning_final_A changes from reasoning to no reasoning
-    print("Number of rows where reasoning_final_A changes from reasoning to no reasoning: ", df_decoded_answers['reasoning_final_A'].ne(df_decoded_answers['no_reasoning_final_A']).value_counts())
+    num_ans_changes = df_decoded_answers['reasoning_final_A'].ne(df_decoded_answers['no_reasoning_final_A']).value_counts()
+    print("Number of rows where reasoning_final_A changes from reasoning to no reasoning: ", num_ans_changes)
+    # add to results['num_ans_changes']
+    results['num_ans_changes'] = num_ans_changes
+    return results
 
     
 
