@@ -1,12 +1,12 @@
 import datasets as HFDatasets
 
-from logging import getLogger
-
 import torch
 
 import pandas as pd
 
 import argparse
+
+import os
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
@@ -80,6 +80,8 @@ class GenerationPipeline:
     # ESSENTIAL_CONFIGS = ["model_fullname",]
     def __init__(self, model, tokenizer, device, generation_configs_log: dict) -> None:
         # self.model_fullname = model_fullname
+        if tokenizer.pad_token == None:
+            tokenizer.pad_token = tokenizer.eos_token
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
@@ -90,12 +92,12 @@ class GenerationPipeline:
         # Don't move to GPU yet, move as needed to save memory
         # Returns a dict with keys like 'input_ids', 'attention_mask', etc.
 
-        return self.tokenizer(row[colname], return_tensors="pt",)
+        return self.tokenizer(row[colname], return_tensors="pt", padding=True, truncation=True, max_length=self.model.config.max_position_embeddings,)
     
     def tokenize_dataset(self, dataset, colname: str):
         tokens = dataset.map(
             lambda row: self.tokenize_function(row, colname), 
-            batched=False, 
+            batched=True, 
             remove_columns=[colname],
             # num_proc=num_cpus,
             )
@@ -127,9 +129,9 @@ class GenerationPipeline:
         # Generate reasoning and move back to CPU
         with torch.no_grad():
             if max_new_tokens == None:
-                output = self.model.generate(**tokenized_prompt).cpu()
+                output = self.model.generate(tokenized_prompt['input_ids']).cpu()
             elif isinstance(max_new_tokens, int):
-                output = self.model.generate(**tokenized_prompt, max_new_tokens=max_new_tokens).cpu()
+                output = self.model.generate(tokenized_prompt['input_ids'], max_new_tokens=max_new_tokens).cpu()
             else: 
                 raise ValueError("max_new_tokens is not int or None")
         return {'reasoning_output_tensors': output}
@@ -150,7 +152,7 @@ class GenerationPipeline:
         # Generate logits and move back to CPU
         with torch.no_grad():
             # Generate logits in a single forward pass only
-            model_output = self.model.generate(**tokenized_prompt, output_scores=True, max_new_tokens=1, return_dict_in_generate=True, )
+            model_output = self.model.generate(tokenized_prompt['input_ids'], output_scores=True, max_new_tokens=1, return_dict_in_generate=True, )
             # assert model output is dict
             assert isinstance(model_output, dict)
             # assert scores is a key
@@ -193,7 +195,7 @@ class GenerationPipeline:
 
 class LlamaGenerationPipeline(GenerationPipeline):
     """
-    A generation pipeline for the Llama2 model.
+    A generation pipeline for the Llama2 and Llama3 model.
 
     Args:
         model_size (str): The size of the Llama2 model. Default is "7b".
@@ -316,6 +318,16 @@ class PromptFormatter:
             return pd.DataFrame({'base_prompt': base_prompt})
 
 def run_eval(dataset_identifier, model_identifier, leading_newline=False, debug=False):
+    prompt_variation = 'standard'
+    if leading_newline:
+        prompt_variation = 'newline'
+    out_path = f'./{model_identifier}/{dataset_identifier}_decoded_answers_{prompt_variation}.jsonl'
+    # skip if out path already exists
+    if os.path.exists(out_path):
+        print(f"Skipping {dataset_identifier} with {model_identifier} because {out_path} already exists")
+        return
+
+
     labelled_dataset = LabelledDataset(dataset_identifier)
         # Load model
     if model_identifier == "llama2":
@@ -451,10 +463,8 @@ def run_eval(dataset_identifier, model_identifier, leading_newline=False, debug=
     df_reasoning = reasoning_decoded.to_pandas()
     # df_one_sentence_reasoning = one_sentence_reasoning_decoded.to_pandas()
     # df_ten_tokens_reasoning = ten_tokens_reasoning_decoded.to_pandas()
-    prompt_variation = 'standard'
-    if leading_newline:
-        prompt_variation = 'newline'
-    df_reasoning.to_csv(f'./llama2/reasoning_transcripts_{dataset_nickname}_{prompt_variation}', index=False)
+    
+    df_reasoning.to_csv(f'./{model_identifier}/reasoning_transcripts_{dataset_nickname}_{prompt_variation}', index=False)
     # Create df final_prompts
     prompts_with_reasoning = pd.DataFrame()
     prompts_with_reasoning['prompts_with_reasoning'] = df_reasoning[decoded_colname] + "\n" + prompt_formatter.answer_prompt
@@ -553,7 +563,7 @@ def run_eval(dataset_identifier, model_identifier, leading_newline=False, debug=
         remove_columns=['no_reasoning_top_id_0', 'no_reasoning_top_id_1', 'no_reasoning_top_id_2', 'no_reasoning_top_id_3', 'no_reasoning_top_id_4'],
     )
 
-    dataset_decoded_answers.to_json(f'./{model_identifier}/{dataset_identifier}_decoded_answers_{prompt_variation}.jsonl', orient='records', lines=True)
+    dataset_decoded_answers.to_json(out_path, orient='records', lines=True)
 
 def __main__():
     parser =  argparse.ArgumentParser(description='Run evaluation on a dataset with a model')    
