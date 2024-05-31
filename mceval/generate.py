@@ -455,7 +455,7 @@ def get_generation_pipeline(model_identifier):
         raise ValueError(f"Model {model_identifier} not supported. Supported models: llama2, llama2-chat")
     return generation_pipeline
 
-def run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_newline=False, debug=False):
+def run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_newline=False, debug=False, reasoning_only=False):
     prompt_variation = 'standard'
     if leading_newline:
         prompt_variation = 'newline'
@@ -464,7 +464,7 @@ def run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_ne
     scores_with_reasoning_path = f'./{model_identifier}/scores_with_reasoning_{labelled_dataset.dataset_nickname}_{prompt_variation}.jsonl'
     # # skip if  path already exists
     if os.path.exists(scores_without_reasoning_path) and os.path.exists(scores_with_reasoning_path):
-        print(f"Skipping {dataset_identifier} with {model_identifier} because {scores_without_reasoning_path} and {scores_with_reasoning_path} already exists")
+        print(f"Skipping because {scores_without_reasoning_path} and {scores_with_reasoning_path} already exists")
         return
     # if os.path.exists(out_path):
     #     print(f"Skipping {dataset_identifier} with {model_identifier} because {out_path} already exists")
@@ -504,6 +504,8 @@ def run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_ne
     reasoning_path =  f'./{model_identifier}/reasoning_transcripts_{dataset_nickname}_{prompt_variation}.jsonl'
     # check if reasoning path exists
     if os.path.exists(reasoning_path):
+        if reasoning_only:
+            return
         print(f"Loading reasoning from {reasoning_path}")
         # load
         df_reasoning = pd.read_json(reasoning_path, lines=True, orient='records')
@@ -511,7 +513,7 @@ def run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_ne
         print(f"Generating reasoning and saving to {reasoning_path}")
         df_reasoning = generate_prompts(prompt_formatter, base_prompts, reasoning_path, decoded_colname, generation_pipeline, debug=debug)
         
-
+    
     
 
     # Create df final_prompts
@@ -577,29 +579,23 @@ def run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_ne
     scores_with_reasoning = tokenized_prompts_with_reasoning.map(
         generation_pipeline.get_top_k_scores,
         batched=True,
-        batch_size=15,
+        batch_size=5,
         remove_columns=['input_ids', 'attention_mask'],
     )
 
     scores_without_reasoning = tokenized_prompts_without_reasoning.map(
-        top_k_func,
+        generation_pipeline.get_top_k_scores,
         batched=True,
-        batch_size=15,
+        batch_size=10,
         remove_columns=['input_ids', 'attention_mask'],
     )
-
-    # print row 1
-    print(scores_without_reasoning[0])
-
-
-    # Get first item in tensor of first row
 
 
     df_scores_without_reasoning = scores_without_reasoning.to_pandas()
     df_scores_with_reasoning = scores_with_reasoning.to_pandas()
 
     df_scores_without_reasoning.to_json(scores_without_reasoning_path, orient='records', lines=True)
-    df_scores_with_reasoning.to_json(f'./{model_identifier}/scores_with_reasoning_{dataset_nickname}_{prompt_variation}.jsonl', orient='records', lines=True)
+    df_scores_with_reasoning.to_json(scores_with_reasoning_path, orient='records', lines=True)
 
     # final_df = pd.DataFrame()
 
@@ -633,16 +629,20 @@ def __main__():
     parser.add_argument('--model', type=str, nargs='+', help='The identifier for the model to evaluate.', default=['llama2', 'llama3', 'llama3-instruct'], ) 
     parser.add_argument('--prompt_var', type=str, nargs='+', default=['standard', 'leading_newline'],)
     parser.add_argument('--debug', action='store_true', help='Whether to print debug statements.', default=False)
+    parser.add_argument('--reasoning_only', action='store_true', help='Whether to only generate reasoning.', default=False)
     args = parser.parse_args()
 
     for dataset_identifier in args.dataset:
         labelled_dataset = LabelledDataset(dataset_identifier)
         for model_identifier in args.model:
+            print("Running eval on", dataset_identifier, "with", model_identifier)
             generation_pipeline = get_generation_pipeline(model_identifier)
             if 'standard' in args.prompt_var:
-                run_eval(labelled_dataset, generation_pipeline, model_identifier, debug=args.debug)
+                print("Running standard prompt variation")
+                run_eval(labelled_dataset, generation_pipeline, model_identifier, debug=args.debug, reasoning_only=args.reasoning_only)
             if 'leading_newline' in args.prompt_var:
-                run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_newline=True, debug=args.debug)
+                print("Running leading_newline prompt variation")
+                run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_newline=True, debug=args.debug, reasoning_only=args.reasoning_only)
                          
 
 if __name__ == "__main__":
