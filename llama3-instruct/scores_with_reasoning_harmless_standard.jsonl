@@ -1,4 +1,6 @@
-{"top_k_scores":[32.831073761,32.3319549561,null,null,null],"top_k_ids":[362,426,2,1,0]}
-{"top_k_scores":[31.8244762421,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
-{"top_k_scores":[31.7585296631,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
-{"top_k_scores":[30.2762336731,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
+{"top_k_scores":[31.4800128937,30.449640274,null,null,null],"top_k_ids":[362,426,2,1,0]}
+{"top_k_scores":[33.2474403381,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
+{"top_k_scores":[32.3534164429,30.3065414429,null,null,null],"top_k_ids":[362,426,2,1,0]}
+{"top_k_scores":[33.573097229,32.652469635,null,null,null],"top_k_ids":[362,426,2,1,0]}
+{"top_k_scores":[32.0872993469,29.5148563385,null,null,null],"top_k_ids":[362,426,2,1,0]}
+{"top_k_scores":[30.4433174133,null,null,null,null],"top_k_ids":[362,2,0,3,1]}

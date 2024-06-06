@@ -1,0 +1,6 @@
+{"top_k_scores":[32.2803192139,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
+{"top_k_scores":[31.5401935577,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
+{"top_k_scores":[31.7856788635,30.3086299896,null,null,null],"top_k_ids":[362,426,2,1,0]}
+{"top_k_scores":[30.9412021637,28.4110469818,null,null,null],"top_k_ids":[362,220,2,1,0]}
+{"top_k_scores":[35.1427001953,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
+{"top_k_scores":[30.8249588013,null,null,null,null],"top_k_ids":[362,2,0,3,1]}
