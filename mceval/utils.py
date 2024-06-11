@@ -1,4 +1,14 @@
+import datasets as HFDatasets
 
+import torch
+
+import pandas as pd
+
+import argparse
+
+import os
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 class LabelledDataset:
     '''
@@ -23,7 +33,7 @@ class LabelledDataset:
         self.dataset_nickname = dataset_nickname
         self.dataset = LabelledDataset.load_dataset(dataset_nickname)
 
-    def load_dataset(dataset_nickname: str) -> HFDatasets.Dataset:
+    def load_dataset(dataset_nickname: str):
         if dataset_nickname == "harmless":
             dataset = HFDatasets.load_dataset("HuggingFaceH4/hhh_alignment", 'harmless')['test'].flatten()
             # Remove column "targets__labels"
