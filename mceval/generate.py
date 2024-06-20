@@ -264,19 +264,39 @@ def run_eval(labelled_dataset, generation_pipeline, model_identifier, leading_ne
     # else:
     #     top_k_func = lambda row: generation_pipeline.get_top_k_scores(row, k=5, scores_is_tuple=False)
 
+    # out_dict = {'top_k_scores': [], 'top_k_ids': []}
     scores_with_reasoning = tokenized_prompts_with_reasoning.map(
-        generation_pipeline.get_top_k_scores,
-        batched=True,
-        batch_size=10,
+        lambda batch: generation_pipeline.get_top_k_scores(batch), #ERROR: bsz, q_len, _ = hidden_states.size() ValueError: not enough values to unpack (expected 3, got 2)
+        # batched=True,
+        # batch_size=58,
         remove_columns=['input_ids', 'attention_mask'],
     )
 
+    # out_dict_2 = {'top_k_scores': [], 'top_k_ids': []}
     scores_without_reasoning = tokenized_prompts_without_reasoning.map(
-        generation_pipeline.get_top_k_scores,
-        batched=True,
-        batch_size=10,
+        lambda batch: generation_pipeline.get_top_k_scores(batch),
+        # batched=True,
+        # batch_size=58,
         remove_columns=['input_ids', 'attention_mask'],
     )
+    
+    # check if scores_without_reasoning has same number of rows as tokenized_prompts_without_reasoning
+    if len(scores_with_reasoning) == len(tokenized_prompts_with_reasoning):
+        print("scores_without_reasoning has the same number of rows as tokenized_prompts_without_reasoning")
+    else:
+        # print("scores_without_reasoning does not have the same number of rows as tokenized_prompts_without_reasoning")
+        print(len(scores_with_reasoning))
+        print(len(tokenized_prompts_with_reasoning))
+        raise ValueError("scores_without_reasoning does not have the same number of rows as tokenized_prompts_without_reasoning")
+    
+    
+    if len(scores_without_reasoning) == len(tokenized_prompts_without_reasoning):
+        print("scores_without_reasoning has the same number of rows as tokenized_prompts_without_reasoning")
+    else:
+        # print("scores_without_reasoning does not have the same number of rows as tokenized_prompts_without_reasoning")
+        print(len(scores_without_reasoning))
+        print(len(tokenized_prompts_without_reasoning))
+        raise ValueError("scores_without_reasoning does not have the same number of rows as tokenized_prompts_without_reasoning")
 
 
     df_scores_without_reasoning = scores_without_reasoning.to_pandas()

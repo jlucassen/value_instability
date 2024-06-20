@@ -1,0 +1,62 @@
+Traceback (most recent call last):
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/data/joshua_clymer/owen-workspace/value_instability/mceval/generate.py", line 363, in <module>
+    __main__()
+  File "/data/joshua_clymer/owen-workspace/value_instability/mceval/generate.py", line 352, in __main__
+    run_eval(labelled_dataset, generation_pipeline, model_identifier, debug=args.debug, reasoning_only=args.reasoning_only)
+  File "/data/joshua_clymer/owen-workspace/value_instability/mceval/generate.py", line 268, in run_eval
+    scores_with_reasoning = tokenized_prompts_with_reasoning.map(
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 592, in wrapper
+    out: Union["Dataset", "DatasetDict"] = func(self, *args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 557, in wrapper
+    out: Union["Dataset", "DatasetDict"] = func(self, *args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 3097, in map
+    for rank, done, content in Dataset._map_single(**dataset_kwargs):
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 3450, in _map_single
+    example = apply_function_on_filtered_inputs(example, i, offset=offset)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 3353, in apply_function_on_filtered_inputs
+    processed_inputs = function(*fn_args, *additional_args, **fn_kwargs)
+  File "/data/joshua_clymer/owen-workspace/value_instability/mceval/generate.py", line 269, in <lambda>
+    lambda batch: generation_pipeline.get_top_k_scores(batch),
+  File "/data/joshua_clymer/owen-workspace/value_instability/mceval/utils.py", line 149, in get_top_k_scores
+    model_output = self.model.generate(
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
+    return func(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/transformers/generation/utils.py", line 1736, in generate
+    result = self._sample(
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/transformers/generation/utils.py", line 2375, in _sample
+    outputs = self(
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/accelerate/hooks.py", line 166, in new_forward
+    output = module._old_forward(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py", line 1164, in forward
+    outputs = self.model(
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py", line 968, in forward
+    layer_outputs = decoder_layer(
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/accelerate/hooks.py", line 166, in new_forward
+    output = module._old_forward(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py", line 713, in forward
+    hidden_states, self_attn_weights, present_key_value = self.self_attn(
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/accelerate/hooks.py", line 166, in new_forward
+    output = module._old_forward(*args, **kwargs)
+  File "/data/joshua_clymer/miniconda3/envs/redteam2/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py", line 613, in forward
+    bsz, q_len, _ = hidden_states.size()
+ValueError: not enough values to unpack (expected 3, got 2)

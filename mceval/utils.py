@@ -138,29 +138,22 @@ class GenerationPipeline:
         tokenized_prompt = {k: v.to(self.device) for k, v in tokenized_prompt.items()}
         return tokenized_prompt
 
-    def get_top_k_scores(self, tokenized_prompt: dict, k: int = 5, scores_is_tuple=True) -> dict:
+    def get_top_k_scores(self, tokenized_prompt: dict, k: int = 3, scores_is_tuple=True) -> dict:
         '''
         return {'top_k_scores': top_k_scores, 'top_k_ids': top_k_ids}
         USE WITH Dataset.map() ONLY
         Returns dict with tensor with shape (batch_size, sequence_length, vocab_size)
         '''
-        out_dict = {'top_k_scores': [], 'top_k_ids': []}
-        # Move tokens to GPU
-        # tokenized_prompt = self.move_tokens_to_gpu(tokenized_prompt)
-        # Generate logits and move back to CPU
         with torch.no_grad():
             # Generate logits in a single forward pass only
-            model_output = self.model.generate(tokenized_prompt['input_ids'], output_scores=True, max_new_tokens=1, return_dict_in_generate=True, pad_token_id=self.tokenizer.eos_token_id)
+            model_output = self.model.generate(
+                tokenized_prompt['input_ids'].unsqueeze(0).to(self.device), #unsqueeze if batch size is 1, as missing batch dimension?
+                # **tokenized_prompt,
+                output_scores=True, max_new_tokens=1, return_dict_in_generate=True, pad_token_id=self.tokenizer.eos_token_id)
             # assert model output is dict
             assert isinstance(model_output, dict)
             # assert scores is a key
             assert 'scores' in model_output
-            # print(model_output['scores'])
-            # Get scores from model output
-            # if scores_is_tuple:
-            #     scores = model_output['scores'][0] # it's a tuple with only 1 item
-            # else:
-            #     scores = model_output['scores']
             scores = model_output['scores'][0] # it's a tuple with only 1 item
             if not isinstance(scores, torch.Tensor):
                 print(scores)
@@ -171,16 +164,14 @@ class GenerationPipeline:
             
             final_token_scores = scores[-1, :]
             top_k_scores, top_k_ids = torch.topk(final_token_scores, k, dim=-1)
-            top_k_scores = top_k_scores.cpu()
-            top_k_ids = top_k_ids.cpu()
+            top_k_scores = top_k_scores.cpu().clone()
+            top_k_ids = top_k_ids.cpu().clone()
 
             # if not isinstance(top_k_ids[0].item(), int):
             #     print(top_k_ids)
             #     print(top_k_ids[0])
             #     print(top_k_ids[0].item())
             #     raise ValueError("top_k_ids is not a tensor of integers")
-            out_dict['top_k_scores'].append(top_k_scores.tolist())
-            out_dict['top_k_ids'].append(top_k_ids.tolist())
             # for i in range(k):
                 
             #     # out_dict[f"top_k_ids_{i}"] = top_k_ids[i].item()
@@ -188,7 +179,7 @@ class GenerationPipeline:
             #     out_dict[f"top_k_ids_{i}"] = top_k_ids[i]
             #     out_dict[f"top_k_scores_{i}"] = top_k_scores[i]
         print("top_k called")
-        return out_dict
+        return {'top_k_scores': top_k_scores, 'top_k_ids': top_k_ids}
             
             # return {'top_k_scores': top_k_scores, 'top_k_ids': top_k_ids}
             # return self.model(**tokenized_prompt).logits.cpu()
