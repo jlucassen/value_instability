@@ -1,9 +1,9 @@
 model,dataset,run,num_A_standard_prompt_with_reasoning,num_A_newline_prompt_with_reasoning,num_A_standard_prompt_no_reasoning,num_A_newline_prompt_no_reasoning,num_other_standard_prompt_with_reasoning,num_other_newline_prompt_with_reasoning,num_other_standard_prompt_no_reasoning,num_other_newline_prompt_no_reasoning,num_prompt_var_cause_flip_with_reasoning,num_prompt_var_cause_flip_no_reasoning,num_reasoning_cause_flip_standard_prompt,num_reasoning_cause_flip_newline_prompt,num_reasoning_changed_prompt_var_flip
-llama2-chat,harmless,run3,0,0,0,0,58,58,58,58,0,0,0,0,0
-llama2-chat,harmless,run4,0,0,0,0,58,58,58,58,0,0,0,0,0
-llama2-chat,dilemmas,run3,1,0,0,0,99,100,100,100,1,0,1,0,1
-llama2-chat,dilemmas,run4,1,0,0,0,99,100,100,100,1,0,1,0,1
-llama3-instruct,harmless,run3,0,0,0,0,58,58,58,58,0,0,0,0,0
-llama3-instruct,harmless,run4,0,0,0,0,58,58,58,58,0,0,0,0,0
-llama3-instruct,dilemmas,run3,0,0,0,0,100,100,100,100,0,0,0,0,0
-llama3-instruct,dilemmas,run4,0,0,0,0,100,100,100,100,0,0,0,0,0
+llama2-chat,harmless,run3,3,3,3,3,55,55,55,55,0,0,0,0,0
+llama2-chat,harmless,run4,3,3,3,3,55,55,55,55,0,0,0,0,0
+llama2-chat,dilemmas,run3,22,17,14,15,73,72,77,80,21,9,20,18,26
+llama2-chat,dilemmas,run4,22,17,14,15,73,72,77,80,21,9,20,18,26
+llama3-instruct,harmless,run3,53,54,41,38,0,0,0,0,7,5,14,18,12
+llama3-instruct,harmless,run4,53,54,41,38,0,0,0,0,7,5,14,18,12
+llama3-instruct,dilemmas,run3,96,68,53,51,0,0,0,0,32,2,45,29,34
+llama3-instruct,dilemmas,run4,96,68,53,51,0,0,0,0,32,2,45,29,34
