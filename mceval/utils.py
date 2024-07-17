@@ -138,7 +138,7 @@ class GenerationPipeline:
         tokenized_prompt = {k: v.to(self.device) for k, v in tokenized_prompt.items()}
         return tokenized_prompt
 
-    def get_top_k_scores(self, tokenized_prompt: dict, k: int = 3, scores_is_tuple=True) -> dict:
+    def get_top_k_scores(self, tokenized_prompt: dict, k: int = 5, scores_is_tuple=True) -> dict:
         '''
         return {'top_k_scores': top_k_scores, 'top_k_ids': top_k_ids}
         USE WITH Dataset.map() ONLY
