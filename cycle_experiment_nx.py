@@ -117,17 +117,37 @@ def do_cycle_experiment(card_set_size, num_samples, prompt_setting=preference_pr
 # print(f"cycle keep rate, 35t: {sum(gpt_35t_results_flat) / len(gpt_35t_results_flat)}")
 # print(f"cycle keep rate, 4: {sum(gpt_4_results_flat) / len(gpt_4_results_flat)}")
 # %%
-for pp in preference_prompts:
-    llm = LLM("gpt-3.5-turbo")
-    gpt35t_results = do_cycle_experiment(6, 50, pp)
-    gpt_35t_results_flat = [item for sublist in gpt35t_results for item in sublist]
+# for pp in preference_prompts:
+#     llm = LLM("gpt-3.5-turbo")
+#     gpt35t_results = do_cycle_experiment(6, 50, pp)
+#     gpt_35t_results_flat = [item for sublist in gpt35t_results for item in sublist]
 
-    llm = LLM("gpt-4")
-    gpt4_results = do_cycle_experiment(6, 50, pp)
-    gpt_4_results_flat = [item for sublist in gpt4_results for item in sublist]
+#     llm = LLM("gpt-4")
+#     gpt4_results = do_cycle_experiment(6, 50, pp)
+#     gpt_4_results_flat = [item for sublist in gpt4_results for item in sublist]
     
-    print(f'mean cycles, 35t: {sum([len(x) for x in gpt35t_results])/len(gpt35t_results)}')
-    print(f'mean cycles, 4: {sum([len(x) for x in gpt4_results])/len(gpt4_results)}')
-    print(f"cycle keep rate, 35t: {sum(gpt_35t_results_flat) / len(gpt_35t_results_flat)}")
-    print(f"cycle keep rate, 4: {sum(gpt_4_results_flat) / len(gpt_4_results_flat)}")
+#     print(f'mean cycles, 35t: {sum([len(x) for x in gpt35t_results])/len(gpt35t_results)}')
+#     print(f'mean cycles, 4: {sum([len(x) for x in gpt4_results])/len(gpt4_results)}')
+#     print(f"cycle keep rate, 35t: {sum(gpt_35t_results_flat) / len(gpt_35t_results_flat)}")
+#     print(f"cycle keep rate, 4: {sum(gpt_4_results_flat) / len(gpt_4_results_flat)}")
+# %%
+
+currencies = ['Copper', 'Silver', 'Gold']
+lands = ['Estate', 'Duchy', 'Province']
+
+def sanity_check(orderings, llm, n):
+    results = []
+    for ordering in orderings:
+        results.append([])
+        for i in range(len(ordering) - 1):
+            prompt = f"{problem_setting}\n\nIf you could add a card to your deck for free, would you prefer a {ordering[i+1]} over a {ordering[i]}?"
+            yes_count = 0
+            for _ in range(n):
+                completion = llm.choice_completion(prompt, ["Yes", "No"])
+                yes_count += 1 if completion == "Yes" else 0
+            results[-1].append(yes_count/n)
+    return results
+
+print(sanity_check([currencies, lands], LLM("gpt-3.5-turbo"), 100))
+print(sanity_check([currencies, lands], LLM("gpt-4"), 100))
 # %%
