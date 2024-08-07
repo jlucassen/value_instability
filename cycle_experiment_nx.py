@@ -99,37 +99,37 @@ def do_cycle_experiment(card_set_size, num_samples, prompt_setting=preference_pr
     return list(keep_preference_sets)
 
 # # %%
-# llm = LLM("gpt-3.5-turbo")
-# gpt35t_results = do_cycle_experiment(6, 10)
-# gpt_35t_results_flat = [item for sublist in gpt35t_results for item in sublist]
+llm = LLM("gpt-3.5-turbo")
+gpt35t_results = do_cycle_experiment(6, 1)
+gpt_35t_results_flat = [item for sublist in gpt35t_results for item in sublist]
 
-# llm = LLM("gpt-4")
-# gpt4_results = do_cycle_experiment(6, 10)
-# gpt_4_results_flat = [item for sublist in gpt4_results for item in sublist]
+llm = LLM("gpt-4")
+gpt4_results = do_cycle_experiment(6, 1)
+gpt_4_results_flat = [item for sublist in gpt4_results for item in sublist]
 
-# # %%
-# #plt.hist([len(x) for x in gpt35t_results], bins=range(0, 450,20))
-# #plt.show()
-# print(f'mean cycles, 35t: {sum([len(x) for x in gpt35t_results])/len(gpt35t_results)}')
-# #plt.hist([len(x) for x in gpt4_results], bins=range(0, 200,20))
-# #plt.show()
-# print(f'mean cycles, 4: {sum([len(x) for x in gpt4_results])/len(gpt4_results)}')
-# print(f"cycle keep rate, 35t: {sum(gpt_35t_results_flat) / len(gpt_35t_results_flat)}")
-# print(f"cycle keep rate, 4: {sum(gpt_4_results_flat) / len(gpt_4_results_flat)}")
 # %%
-# for pp in preference_prompts:
-#     llm = LLM("gpt-3.5-turbo")
-#     gpt35t_results = do_cycle_experiment(6, 50, pp)
-#     gpt_35t_results_flat = [item for sublist in gpt35t_results for item in sublist]
+#plt.hist([len(x) for x in gpt35t_results], bins=range(0, 450,20))
+#plt.show()
+print(f'mean cycles, 35t: {sum([len(x) for x in gpt35t_results])/len(gpt35t_results)}')
+#plt.hist([len(x) for x in gpt4_results], bins=range(0, 200,20))
+#plt.show()
+print(f'mean cycles, 4: {sum([len(x) for x in gpt4_results])/len(gpt4_results)}')
+print(f"cycle removal rate, 35t: {sum(gpt_35t_results_flat) / len(gpt_35t_results_flat)}")
+print(f"cycle removal rate, 4: {sum(gpt_4_results_flat) / len(gpt_4_results_flat)}")
+# %%
+for pp in preference_prompts:
+    llm = LLM("gpt-3.5-turbo")
+    gpt35t_results = do_cycle_experiment(6, 50, pp)
+    gpt_35t_results_flat = [item for sublist in gpt35t_results for item in sublist]
 
-#     llm = LLM("gpt-4")
-#     gpt4_results = do_cycle_experiment(6, 50, pp)
-#     gpt_4_results_flat = [item for sublist in gpt4_results for item in sublist]
+    llm = LLM("gpt-4")
+    gpt4_results = do_cycle_experiment(6, 50, pp)
+    gpt_4_results_flat = [item for sublist in gpt4_results for item in sublist]
     
-#     print(f'mean cycles, 35t: {sum([len(x) for x in gpt35t_results])/len(gpt35t_results)}')
-#     print(f'mean cycles, 4: {sum([len(x) for x in gpt4_results])/len(gpt4_results)}')
-#     print(f"cycle keep rate, 35t: {sum(gpt_35t_results_flat) / len(gpt_35t_results_flat)}")
-#     print(f"cycle keep rate, 4: {sum(gpt_4_results_flat) / len(gpt_4_results_flat)}")
+    print(f'mean cycles, 35t: {sum([len(x) for x in gpt35t_results])/len(gpt35t_results)}')
+    print(f'mean cycles, 4: {sum([len(x) for x in gpt4_results])/len(gpt4_results)}')
+    print(f"cycle removal rate, 35t: {sum(gpt_35t_results_flat) / len(gpt_35t_results_flat)}")
+    print(f"cycle removal rate, 4: {sum(gpt_4_results_flat) / len(gpt_4_results_flat)}")
 # %%
 
 currencies = ['Copper', 'Silver', 'Gold']
